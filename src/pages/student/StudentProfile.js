@@ -4,7 +4,6 @@ import {
   Paper,
   Typography,
   Grid,
-  Avatar,
   Divider,
   List,
   ListItem,
@@ -103,17 +102,32 @@ const StudentProfile = () => {
       <Paper elevation={3} sx={{ p: 3 }}>
         {/* Header with photo */}
         <Box display="flex" alignItems="center" mb={4}>
-          <Avatar
-            src={student.photoUrl}
-            alt={student.fullName}
+          <Box
             sx={{
-              width: 150,
-              height: 150,
+              width: 180,
+              height: 180,
               mr: 4,
+              borderRadius: 2,
+              overflow: 'hidden',
+              boxShadow: 3,
               border: '3px solid #fff',
-              boxShadow: 3
+              background: '#f0f0f0',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
             }}
-          />
+          >
+            <img
+              src={student.photoUrl}
+              alt={student.fullName}
+              style={{
+                width: '100%',
+                height: '100%',
+                objectFit: 'cover',
+                borderRadius: '8px'
+              }}
+            />
+          </Box>
           <Box>
             <Typography variant="h4" gutterBottom>
               {student.fullName}

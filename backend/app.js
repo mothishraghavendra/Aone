@@ -6,6 +6,8 @@ const dbConfig = require('./config/db');
 // Import routes
 const administratorModule = require('./modules/administrator');
 const authModule = require('./modules/auth/authRouter');
+const studentProfileRoute = require('./routes/studentProfile');
+const updateContactRoute = require('./routes/updateContact');
 
 const app = express();
 
@@ -43,6 +45,8 @@ app.use((req, res, next) => {
 // Use routes
 app.use('/api/auth', authModule);
 app.use('/api/admin', administratorModule);
+app.use('/api/student', studentProfileRoute);
+app.use('/api/student', updateContactRoute);
 
 // Test route
 app.get('/api/test', (req, res) => {

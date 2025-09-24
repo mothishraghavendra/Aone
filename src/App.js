@@ -11,6 +11,8 @@ import ProtectedRoute from './auth/ProtectedRoute';
 import AdminDashboard from './pages/dashboards/AdminDashboard';
 import AddStudent from './pages/administrator/AddStudent';
 import ManageStudents from './pages/administrator/ManageStudents';
+import Dashboard from './pages/Dashboard';
+import StudentProfile from './pages/student/StudentProfile';
 
 // Create theme
 const theme = createTheme({
@@ -75,14 +77,24 @@ function App() {
               } 
             />
 
-            <Route 
-              path="/student/dashboard/*" 
-              element={
-                <ProtectedRoute requiredRole="student">
-                  <StudentLayout />
-                </ProtectedRoute>
-              } 
-            />
+            <Route path="student" element={
+              <ProtectedRoute requiredRole="student">
+                <StudentLayout />
+              </ProtectedRoute>
+            }>
+              <Route index element={<Dashboard />} />
+              <Route path="dashboard" element={<Dashboard />} />
+              <Route path="exam/registration" element={<div>PC/CGS Registration</div>} />
+              <Route path="exam/exam-registration" element={<div>Exam Registration</div>} />
+              <Route path="exam/timetable" element={<div>Student-Wise Time Table</div>} />
+              <Route path="exam/revaluation" element={<div>Revaluation</div>} />
+              <Route path="profile" element={<StudentProfile />} />
+              <Route path="fees" element={<div>Fee Payments</div>} />
+              <Route path="certificate" element={<div>Course Completion Certificate</div>} />
+              <Route path="no-dues" element={<div>No Dues Form</div>} />
+              <Route path="payments/*" element={<div>Payments Section</div>} />
+              <Route path="settings/*" element={<div>Settings</div>} />
+            </Route>
 
             {/* Default Route - Redirect to Login */}
             <Route path="/" element={<Navigate to="/login" replace />} />
