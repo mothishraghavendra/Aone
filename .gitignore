@@ -28,7 +28,7 @@ Thumbs.db
 
 # Database files
 *.sqlite
-backend/database/*.sql
+!backend/database/*.sql
 
 # IDE files
 .vscode/
