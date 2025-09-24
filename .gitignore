@@ -28,7 +28,6 @@ Thumbs.db
 
 # Database files
 *.sqlite
-*.db
 backend/database/*.sql
 
 # IDE files

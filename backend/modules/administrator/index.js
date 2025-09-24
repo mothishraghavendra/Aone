@@ -3,6 +3,7 @@ const router = express.Router();
 const db = require('../../config/db');
 const { authenticateToken, authorizeRole } = require('../../middlewares/authMiddleware');
 const { validateStudent } = require('./validator');
+const { validateStaff } = require('./staffValidator');
 
 // Create a new student
 router.post('/students', authenticateToken, authorizeRole('admin'), async (req, res) => {
@@ -48,7 +49,11 @@ router.post('/students', authenticateToken, authorizeRole('admin'), async (req, 
         const { error } = validateStudent(req.body);
         if (error) {
             console.error('Validation error:', error);
-            return res.status(400).json({ error: error.details[0].message });
+            // Return all validation errors, not just the first
+            return res.status(400).json({
+                error: 'Validation failed',
+                details: error.details.map(e => e.message)
+            });
         }
         console.log('Student data validation passed');
 
@@ -181,6 +186,103 @@ router.get('/students', authenticateToken, authorizeRole('admin'), async (req, r
         console.error('Error fetching students:', error);
         res.status(500).json({
             error: 'Internal server error while fetching students'
+        });
+    }
+});
+
+// Create a new staff
+router.post('/staff', authenticateToken, authorizeRole('admin'), async (req, res) => {
+    try {
+        console.log('Received staff creation request:', JSON.stringify(req.body, null, 2));
+        const { error } = validateStaff(req.body);
+        if (error) {
+            console.error('Validation error:', error);
+            return res.status(400).json({
+                error: 'Validation failed',
+                details: error.details.map(e => e.message)
+            });
+        }
+        console.log('Staff data validation passed');
+
+        // Check if staff already exists with same email or employeeId
+        const { email, employeeId } = req.body;
+        const [existingStaff] = await db.query(
+            'SELECT * FROM staff WHERE email = ? OR employee_id = ?',
+            [email, employeeId]
+        );
+        if (existingStaff.length > 0) {
+            return res.status(400).json({
+                error: 'Staff with this email or employee ID already exists'
+            });
+        }
+
+        // Insert new staff
+        const [result] = await db.query(
+            `INSERT INTO staff (
+                full_name, gender, dob, marital_status, email, mobile_number,
+                current_address, permanent_address, emergency_contact_person, emergency_contact_number,
+                department, role_designation, areas_of_expertise, education_qualifications, research_interests,
+                previous_experience, publications, certifications, courses_handled, date_of_joining,
+                employee_id, employment_type, salary_ctc, grade_pay, bank_account_details, pan_number,
+                aadhaar_number, photo_url, digital_signature_url, achievements_awards, languages_known,
+                mentoring_availability, linkedin_profile, researchgate_profile, google_scholar_profile, special_roles
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+            [
+                req.body.fullName, req.body.gender, req.body.dob, req.body.maritalStatus || null, req.body.email,
+                req.body.mobileNumber, req.body.currentAddress || null, req.body.permanentAddress || null,
+                req.body.emergencyContactPerson || null, req.body.emergencyContactNumber || null,
+                req.body.department, req.body.roleDesignation, req.body.areasOfExpertise || null,
+                req.body.educationQualifications || null, req.body.researchInterests || null,
+                req.body.previousExperience || null, req.body.publications || null, req.body.certifications || null,
+                req.body.coursesHandled || null, req.body.dateOfJoining,
+                req.body.employeeId, req.body.employmentType, req.body.salaryCtc || null, req.body.gradePay || null,
+                req.body.bankAccountDetails || null, req.body.panNumber || null, req.body.aadhaarNumber || null,
+                req.body.photoUrl || null, req.body.digitalSignatureUrl || null, req.body.achievementsAwards || null,
+                req.body.languagesKnown || null, req.body.mentoringAvailability || null, req.body.linkedinProfile || null,
+                req.body.researchgateProfile || null, req.body.googleScholarProfile || null, req.body.specialRoles || null
+            ]
+        );
+
+        res.status(201).json({
+            message: 'Staff created successfully',
+            staffId: result.insertId
+        });
+    } catch (error) {
+        console.error('Error creating staff:', error);
+        res.status(500).json({
+            error: 'Internal server error while creating staff',
+            details: process.env.NODE_ENV === 'development' ? error.message : undefined
+        });
+    }
+});
+
+// Get all staff
+router.get('/staff', authenticateToken, authorizeRole('admin'), async (req, res) => {
+    try {
+        const [staff] = await db.query(
+            `SELECT 
+                staff_id,
+                full_name,
+                email,
+                mobile_number,
+                department,
+                role_designation,
+                date_of_joining,
+                employee_id,
+                employment_type,
+                salary_ctc,
+                grade_pay,
+                created_at,
+                updated_at
+            FROM staff
+            ORDER BY created_at DESC`
+        );
+
+        res.json(staff);
+    } catch (error) {
+        console.error('Error fetching staff:', error);
+        res.status(500).json({
+            error: 'Internal server error while fetching staff'
         });
     }
 });

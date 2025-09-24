@@ -13,6 +13,7 @@ import AddStudent from './pages/administrator/AddStudent';
 import ManageStudents from './pages/administrator/ManageStudents';
 import Dashboard from './pages/Dashboard';
 import StudentProfile from './pages/student/StudentProfile';
+import AddStaff from './pages/administrator/AddStaff';
 
 // Create theme
 const theme = createTheme({
@@ -51,6 +52,10 @@ function App() {
                       <Route path="students">
                         <Route path="add" element={<AddStudent />} />
                         <Route path="manage" element={<ManageStudents />} />
+                      </Route>
+                      <Route path="staff">
+                        <Route path="add" element={<AddStaff />} />
+                        {/* You can add manage, attendance, records routes here */}
                       </Route>
                       {/* Add more admin routes here */}
                     </Routes>
