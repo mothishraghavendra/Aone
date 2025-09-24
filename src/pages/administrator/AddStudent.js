@@ -20,8 +20,8 @@ import { Save, PersonAdd, CloudUpload, Delete } from '@mui/icons-material';
 import axios from 'axios';
 
 // Cloudinary configuration
-const CLOUDINARY_CLOUD_NAME = 'djod1j9o8';
-const CLOUDINARY_UPLOAD_PRESET = 'educycle_unsigned';
+const CLOUDINARY_CLOUD_NAME = process.env.REACT_APP_CLOUDINARY_CLOUD_NAME;
+const CLOUDINARY_UPLOAD_PRESET = process.env.REACT_APP_CLOUDINARY_UPLOAD_PRESET;
 
 const AddStudent = () => {
   const [activeStep, setActiveStep] = useState(0);

@@ -2,6 +2,7 @@ const mysql = require('mysql2/promise');
 const fs = require('fs').promises;
 const path = require('path');
 const config = require('../config/config');
+const { createDefaultUsers } = require('./init-default-users');
 
 async function initializeDatabase() {
     let connection;
@@ -31,6 +32,7 @@ async function initializeDatabase() {
 
         // Read and execute SQL files in order
         const sqlFiles = [
+            '00_users_auth.sql',
             '01_students_academics.sql',
             '02_hostel_services.sql',
             '03_payments_exams.sql',
@@ -79,6 +81,14 @@ async function initializeDatabase() {
             }
             
             console.log(`Executed ${file} successfully`);
+        }
+
+        // Initialize default users after tables are created
+        try {
+            await createDefaultUsers();
+            console.log('Default users initialized successfully');
+        } catch (err) {
+            console.error('Error initializing default users:', err);
         }
 
         console.log('Database initialized successfully');
